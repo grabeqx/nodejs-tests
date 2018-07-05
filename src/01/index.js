@@ -1,4 +1,5 @@
-const add = require('./add');
+const path = require('path');
+const utils = require('util');
 
-console.log(add(5, 6));
-console.log(message);
+var log = utils.format("nazwa : %s", path.basename(__filename));
+console.log(log);
