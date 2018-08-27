@@ -2,7 +2,8 @@ const express  = require('express');
 const app = express();
 const hbs = require('express-handlebars');
 const users = require('./users/users');
-
+const bodyParser = require('body-parser');
+const api = require('./api/api');
 
 app.engine('handlebars', hbs({
     defaultLayout: 'main'
@@ -10,6 +11,9 @@ app.engine('handlebars', hbs({
 app.set('view engine', 'handlebars');
 
 app.use(express.static('public'));
+app.use(bodyParser.json());
+
+app.use("/api", api);
 
 app.get('/', function(req, res) {
 
