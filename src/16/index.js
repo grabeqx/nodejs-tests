@@ -1,6 +1,7 @@
 const express  = require('express');
 const app = express();
 const hbs = require('express-handlebars');
+const users = require('./users/users');
 
 
 app.engine('handlebars', hbs({
@@ -14,7 +15,8 @@ app.get('/', function(req, res) {
 
     res.render('home', {
         title: 'strona głowna',
-        content: 'to jest strona glowna'
+        content: 'to jest strona glowna',
+        users: users.list()
     })
 
 });

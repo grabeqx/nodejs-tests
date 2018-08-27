@@ -1,4 +1,11 @@
 <div class="page-header"> 
     <h2>{{ title }}</h2>
     <p>{{ content }}</p>
+    {{#if users}}
+    <ul>
+        {{#each users}}
+        <li data-id="{{id}}">{{name}} {{lastName}}</li>
+        {{/each}}
+    </ul>
+    {{/if}}
 </div>
