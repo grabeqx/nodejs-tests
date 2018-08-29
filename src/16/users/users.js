@@ -1,96 +1,80 @@
-const fs = require("fs");
-const path = require("path");
+const mongoose = require('mongoose');
 
-var users = require("./usersDb");
+const db_user = 'grabeq';
+const db_pass = 'testowy1';
+ 
+mongoose.connect(`mongodb://${db_user}:${db_pass}@ds237192.mlab.com:37192/nodedb`, { useNewUrlParser: true });
 
-function save() {
+const schema = new mongoose.Schema({
+    name: String,
+    lastName: String
+});
 
-    fs.writeFile(path.join(__dirname, "usersDb.json"), JSON.stringify(users, null, 4));
+var User = mongoose.model('User', schema);
 
-}
+function addUser(userData, cb) {
 
-function copy(obj) {
+    var user = new User(userData);
 
-    return JSON.parse( JSON.stringify(obj) );
-
-}
-
-function getNextId() {
-
-    var lastUser = users[users.length - 1];
-
-    return lastUser ? lastUser.id + 1 : 1;
-
-}
-
-function findUserById(id) {
-
-    var user = null;
-    id = parseInt(id);
-
-    users.every(function(u) {
-
-        if(u.id === id) {
-            user = u;
-            return false;
+    user.save(function(err, user) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, user);
         }
-
-        return true;
-
-    });
-
-    return user;
+    })
 
 }
 
-function addUser(userData) {
+function getUser(id, cb) {
 
-    userData.id = getNextId();
-
-    users.push(userData);
-
-    save();
-
-    return getUser(userData.id);
-
-}
-
-function getUser(id) {
-
-    return copy( findUserById(id) );
+    User.findById(id).exec(function(err, user) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, user);
+        }
+    })
 
 }
 
-function updateUser(userData) {
+function updateUser(userData, cb) {
 
-    var user = findUserById(userData.id);
+    var id = userData.id;
 
     delete userData.id;
 
-    Object.assign(user, userData);
-
-    save();
-
-    return getUser(user.id);
-
-}
-
-function deleteUser(id) {
-
-    var user = findUserById(id),
-        index = users.indexOf(user);
-
-    users.splice(index, 1);
-
-    save();
-
-    return copy(user);
+    User.findByIdAndUpdate(id, userData).exec(function(err, user) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, user);
+        }
+    })
 
 }
 
-function listUsers() {
+function deleteUser(id, cb) {
 
-    return copy(users);
+    User.findByIdAndRemove(id).exec(function(err, user) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, user);
+        }
+    })
+
+}
+
+function listUsers(cb) {
+
+    User.find({}).exec(function(err, users) {
+        if(err) {
+            cb(err);
+        } else {
+            cb(null, users);
+        }
+    })
 
 }
 
