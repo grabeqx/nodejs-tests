@@ -1,7 +1,8 @@
 const express = require("express");
-const ws = require('ws').Server;
-const hbs = require("express-handlebars");
 const app = express();
+const hbs = require("express-handlebars");
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 app.engine("handlebars", hbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
@@ -16,20 +17,17 @@ app.get("/", function(req, res) {
 
 });
 
-app.listen(8080, function() {
+server.listen(8080, function() {
 
     console.log("Serwer został uruchomiony pod adresem http://localhost:8080");
 
 });
 
-var wss = new ws({port: 3000});
 
-wss.on('connection', function(socket) {
-
+io.on('connection', function(socket) {
     socket.on('message', function(msg) {
-        console.log(msg);
 
-        socket.send( msg.toUpperCase() );
+        socket.emit('message', msg.toUpperCase());
+        
     })
-
-});
+})
