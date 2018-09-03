@@ -6,7 +6,9 @@
         nick = $("#nick"),
         chatForm = $("#chat-form"),
         chatWindow = $("#chat-window"),
-        chatMessage = $("#message");
+        chatMessage = $("#message"),
+        chatStatusTpl = Handlebars.compile($('#chat-status-template').html()),
+        joined = false;
 
     joinForm.on("submit", function(e) {
 
@@ -19,10 +21,12 @@
         } else {
             nick.removeClass("invalid");
 
-            console.log(nickName);
+            socket.emit('join', nickName);1
 
             joinForm.hide();
             chatForm.show();
+
+            joined = true;
         }
 
     });
@@ -34,10 +38,33 @@
         var message = $.trim( chatMessage.val() );
 
         if(message !== "") {
-            console.log(message);
+            socket.emit('message', message);
             chatMessage.val("");
         }
 
     });
+
+    socket.on('status', function(data) {
+
+        if(!joined) {
+            return;
+        }
+
+        var html = chatStatusTpl(data);
+        chatWindow.append(html);
+    });
+
+
+    socket.on('message', function(msg) {
+
+        if(!joined) {
+            return;
+        }
+
+        var html = chatStatusTpl(msg);
+        chatWindow.append(html)
+    })
+
+    
 
 })();

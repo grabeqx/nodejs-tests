@@ -34,3 +34,5 @@ server.listen(8080, function() {
     console.log("Serwer został uruchomiony pod adresem http://localhost:8080");
 
 });
+
+chat(io);
